@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -20,13 +19,12 @@ import {
 import Favicon from "./Favicon";
 import { initialWebsites } from "../data/mockData";
 
-const WebsiteSetup = () => {
+const WebsiteSetup = ({ onStart }) => {
   const [available, setAvailable] = useState(initialWebsites);
   const [selected, setSelected] = useState(initialWebsites.slice(0, 3));
   const [newSite, setNewSite] = useState("");
   const [longPressedId, setLongPressedId] = useState(null);
   const pressTimer = useRef(null);
-  const navigate = useNavigate();
 
   // Helper: extract hostname from a URL string for favicons
   const getDomain = (url) => {
@@ -34,7 +32,7 @@ const WebsiteSetup = () => {
   };
 
   const handleStart = () => {
-    navigate("/chat", { state: { selectedSites: selected } });
+    if (onStart) onStart(selected);
   };
 
   const toggleWebsite = (site) => {

@@ -25,6 +25,8 @@ const darkTheme = createTheme({
 
 export default function App({ setCurrentView }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [internalView, setInternalView] = useState("setup");
+  const [selectedSites, setSelectedSites] = useState([]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -74,7 +76,14 @@ export default function App({ setCurrentView }) {
               p: 2,
             }}
           >
-            <WebsiteSetup />
+            {internalView === "setup" ? (
+              <WebsiteSetup onStart={(sites) => {
+                setSelectedSites(sites);
+                setInternalView("chat");
+              }} />
+            ) : (
+              <Chat selectedSites={selectedSites} />
+            )}
           </Box>
         </Box>
       </Box>

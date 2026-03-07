@@ -1,22 +1,13 @@
 import React, { useState } from 'react';
-import { useLocation, Navigate } from 'react-router-dom';
 import MainChatView from './MainChatView';
 import LoadingAnimation from './LoadingAnimation';
 import ChatResultsPage from './ChatResultsPage';
 import axios from 'axios';
 
-const Chat = () => {
-    const location = useLocation();
+const Chat = ({ selectedSites }) => {
     const [step, setStep] = useState("chat"); // 'chat', 'loading', 'results'
     const [messages, setMessages] = useState([]);
     const [currentQuery, setCurrentQuery] = useState('');
-
-    // If the user navigates to /chat directly without selecting sites, redirect them.
-    if (!location.state?.selectedSites) {
-        return <Navigate to="/" />;
-    }
-
-    const { selectedSites } = location.state;
 
     const handleSearch = async (query, existingMessages = []) => {
         setCurrentQuery(query);
