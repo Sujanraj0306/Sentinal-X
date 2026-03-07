@@ -15,8 +15,13 @@ from langdetect import detect, LangDetectException
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables explicitly from project root
+try:
+    from pathlib import Path
+    root_env = Path(__file__).resolve().parent.parent.parent.parent / '.env'
+    load_dotenv(dotenv_path=root_env)
+except Exception:
+    load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -66,8 +71,8 @@ class TextPreprocessor:
         
         if self.has_translation:
             try:
-                self.model = genai.GenerativeModel('gemini-2.0-flash')
-                logger.info("Gemini model initialized for translation")
+                self.model = genai.GenerativeModel('gemini-3.1-flash')
+                logger.info("Gemini model initialized for translation (gemini-3.1-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_translation = False

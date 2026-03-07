@@ -167,9 +167,19 @@ function App({ onClose, onComplete }) {
 
      return (
           <div className="module1-scope app">
-               <header className="app-header">
-                    <h1>LEGAL ANALYSIS SYSTEM</h1>
-                    <p>AI-POWERED CASE CLASSIFICATION & REPORTING</p>
+               <header className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                         <h1>LEGAL ANALYSIS SYSTEM</h1>
+                         <p>AI-POWERED CASE CLASSIFICATION &amp; REPORTING</p>
+                    </div>
+                    {onClose && (
+                         <button
+                              onClick={onClose}
+                              className="module1-back-btn"
+                         >
+                              &#8592; BACK TO WAR ROOM
+                         </button>
+                    )}
                </header>
 
                <main className="app-main">

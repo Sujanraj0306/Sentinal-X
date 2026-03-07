@@ -10,6 +10,15 @@ import os
 from typing import Dict, Any, List
 import google.generativeai as genai
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables explicitly from project root
+try:
+    from pathlib import Path
+    root_env = Path(__file__).resolve().parent.parent.parent.parent.parent / '.env'
+    load_dotenv(dotenv_path=root_env)
+except Exception:
+    load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +37,7 @@ class AdvisoryAnalyzer:
             self.model = None
         else:
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-2.0-flash')
+            self.model = genai.GenerativeModel('gemini-3.1-flash')
             logger.info("Gemini API configured successfully")
     
     def analyze_advisory(
@@ -68,29 +77,40 @@ class AdvisoryAnalyzer:
                 context
             )
             
+            import signal
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+            
+            def _call_gemini(p):
+                resp = self.model.generate_content(p)
+                return resp.text
+            
             # Generate analysis with timeout
             try:
-                response = self.model.generate_content(
-                    prompt,
-                    request_options={"timeout": 30}
-                )
-                analysis_text = response.text
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(_call_gemini, prompt)
+                    analysis_text = future.result(timeout=60)
                 
                 result = {
                     "analysis": analysis_text,
                     "domain": domain,
                     "generated_at": datetime.now().isoformat(),
-                    "model_used": "gemini-1.5-flash",
+                    "model_used": "gemini-3.1-flash",
                     "context_docs_count": len(retrieved_docs)
                 }
                 
                 logger.info("Advisory analysis generated successfully")
                 return result
                 
-            except Exception as api_error:
-                logger.error(f"Gemini API error: {str(api_error)}")
-                logger.info("Falling back to template-based analysis")
-                return self._fallback_analysis(client_objective, background, domain)
+            except (TimeoutError, FuturesTimeoutError, Exception) as e:
+                logger.error(f"API Failed: {str(e)}")
+                return {
+                    "analysis": f"API Error: {str(e)}",
+                    "domain": domain,
+                    "generated_at": datetime.now().isoformat(),
+                    "model_used": "api_error",
+                    "context_docs_count": len(retrieved_docs),
+                    "error": str(e)
+                }
             
         except Exception as e:
             logger.error(f"Error generating advisory analysis: {str(e)}")
