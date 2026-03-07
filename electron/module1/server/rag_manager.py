@@ -8,9 +8,24 @@ Provides document ingestion and retrieval capabilities.
 import logging
 import os
 from typing import List, Dict, Any, Optional
+
+# --- PREVENT PYDANTIC FROM FINDING .ENV IN CWD ---
+_old_cwd = os.getcwd()
+os.chdir("/")
+
+_saved_env = {}
+for _k in ["GEMINI_API_KEY", "OPENAI_API_KEY", "EXTERNAL_MODEL_PATH"]:
+    if _k in os.environ:
+        _saved_env[_k] = os.environ.pop(_k)
+
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
+
+for _k, _v in _saved_env.items():
+    os.environ[_k] = _v
+os.chdir(_old_cwd)
+# ------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +45,15 @@ class RAGManager:
         self.persist_directory = persist_directory
         
         # Initialize ChromaDB client
-        self.client = chromadb.Client(Settings(
-            persist_directory=persist_directory,
-            anonymized_telemetry=False
-        ))
+        _old_cwd = os.getcwd()
+        os.chdir("/")
+        try:
+            self.client = chromadb.Client(Settings(
+                persist_directory=persist_directory,
+                anonymized_telemetry=False
+            ))
+        finally:
+            os.chdir(_old_cwd)
         
         # Initialize sentence transformer for embeddings
         self.model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')

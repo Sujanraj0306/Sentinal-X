@@ -166,7 +166,7 @@ function App({ onClose, onComplete }) {
      };
 
      return (
-          <div className="app">
+          <div className="module1-scope app">
                <header className="app-header">
                     <h1>LEGAL ANALYSIS SYSTEM</h1>
                     <p>AI-POWERED CASE CLASSIFICATION & REPORTING</p>
