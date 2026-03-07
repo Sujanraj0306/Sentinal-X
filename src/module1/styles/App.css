@@ -52,6 +52,26 @@
   letter-spacing: 2px;
 }
 
+.module1-scope .module1-back-btn {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 8px 16px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.module1-scope .module1-back-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
 .module1-scope .app-main {
   flex: 1;
   padding: 3rem 2rem;

@@ -191,12 +191,6 @@ function App() {
           {/* New Module 1 Overlay (Fully imported UI) */}
           {isUploadModalOpen && (
             <div className="fixed inset-0 z-50 bg-white grid overflow-y-auto">
-              <button
-                onClick={() => setIsUploadModalOpen(false)}
-                className="absolute top-4 right-4 z-[60] bg-black text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-gray-800 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] active:translate-x-1 active:translate-y-1 active:shadow-none"
-              >
-                Close Module 1
-              </button>
               <Module1App
                 onClose={() => setIsUploadModalOpen(false)}
                 onComplete={async (caseTitle, folderPath) => {
