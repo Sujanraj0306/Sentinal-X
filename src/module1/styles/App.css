@@ -1,0 +1,617 @@
+/* ============================================================
+   MODULE 1 CSS — SCOPED UNDER .module1-scope
+   All rules are nested to prevent bleeding into Module 3 UI.
+   ============================================================ */
+
+.module1-scope {
+
+  /* Global Resets (scoped) */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  font-family: 'Times New Roman',
+  Times,
+  serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f5f5f5;
+  color: #111;
+  min-height: 100vh;
+}
+
+.module1-scope.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.module1-scope .app-header {
+  background: #000;
+  color: #fff;
+  padding: 1.5rem 2rem;
+  border-bottom: 4px solid #333;
+  text-align: left;
+}
+
+.module1-scope .app-header h1 {
+  font-size: 2rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+
+.module1-scope .app-header p {
+  color: #ccc;
+  font-size: 0.9rem;
+  font-family: 'Arial', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.module1-scope .module1-back-btn {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 8px 16px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.module1-scope .module1-back-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+.module1-scope .app-main {
+  flex: 1;
+  padding: 3rem 2rem;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Common Layout */
+.module1-scope .form-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 2rem;
+}
+
+.module1-scope .form-section:last-child {
+  border-bottom: none;
+}
+
+.module1-scope h2,
+.module1-scope h3 {
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.module1-scope h2 {
+  font-size: 1.75rem;
+  border-bottom: 2px solid #000;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.module1-scope h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* Inputs */
+.module1-scope label {
+  display: block;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.module1-scope input[type="text"],
+.module1-scope textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #000;
+  background: #fff;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
+  border-radius: 0;
+}
+
+.module1-scope .analysis-text {
+  white-space: pre-wrap;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.module1-scope .analysis-heading {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.module1-scope .analysis-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 1rem;
+}
+
+.module1-scope .analysis-table th,
+.module1-scope .analysis-table td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.module1-scope .analysis-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.module1-scope .analysis-bullet {
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.module1-scope input[type="text"]:focus,
+.module1-scope textarea:focus {
+  outline: 2px solid #000;
+  background: #fff;
+}
+
+.module1-scope .helper-text {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+/* Case Form Specifics */
+.module1-scope .case-form {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 3rem;
+  box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.module1-scope .btn-file {
+  display: inline-block;
+  border: 1px solid #000;
+  padding: 8px 16px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: #f0f0f0;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.module1-scope .btn-file:hover {
+  background: #ddd;
+}
+
+.module1-scope input[type="file"] {
+  display: none;
+}
+
+.module1-scope .file-name {
+  margin-left: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.module1-scope .input-group-mixed {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.module1-scope .file-upload-inline {
+  display: flex;
+  align-items: center;
+  background: #eee;
+  padding: 10px;
+  border: 1px dashed #999;
+}
+
+.module1-scope .file-drop-zone {
+  border: 2px dashed #000;
+  padding: 2rem;
+  text-align: center;
+  display: block;
+  cursor: pointer;
+  background: #fafafa;
+  transition: background 0.2s;
+}
+
+.module1-scope .file-drop-zone:hover {
+  background: #f0f0f0;
+}
+
+.module1-scope .file-drop-zone span {
+  display: block;
+  font-weight: 700;
+  font-family: 'Arial', sans-serif;
+}
+
+.module1-scope .file-list-simple {
+  margin-top: 1rem;
+  background: #eee;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  font-family: 'Courier New', monospace;
+}
+
+/* Buttons */
+.module1-scope .btn-submit,
+.module1-scope .btn-primary {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 0;
+  transition: background 0.2s;
+}
+
+.module1-scope .btn-submit:hover,
+.module1-scope .btn-primary:hover {
+  background: #333;
+}
+
+.module1-scope .btn-secondary {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  padding: 10px 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.module1-scope .btn-secondary:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Progress Indicator */
+.module1-scope .progress-indicator {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.module1-scope .progress-steps {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #000;
+  padding-bottom: 1rem;
+}
+
+.module1-scope .progress-step {
+  text-align: center;
+  opacity: 0.3;
+}
+
+.module1-scope .progress-step.active,
+.module1-scope .progress-step.completed {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.module1-scope .step-circle {
+  width: 20px;
+  height: 20px;
+  background: #000;
+  border-radius: 50%;
+  margin: 0 auto 5px;
+  display: none;
+}
+
+.module1-scope .step-name {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Results View */
+.module1-scope .results-view {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 3rem;
+}
+
+.module1-scope .result-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #000;
+  background: #fff;
+}
+
+.module1-scope .result-card h3 {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 5px 10px;
+  display: inline-block;
+  margin-top: -25px;
+  font-size: 0.9rem;
+}
+
+.module1-scope .section-item {
+  border-bottom: 1px dashed #999;
+  padding: 10px 0;
+}
+
+.module1-scope .error-banner {
+  background: #000;
+  color: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid red;
+  font-family: 'Courier New', monospace;
+}
+
+/* Case Type Selector */
+.module1-scope .case-type-selector {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.module1-scope .case-type-selector h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.module1-scope .case-type-options {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.module1-scope .case-type-option {
+  flex: 1;
+  max-width: 400px;
+  border: 2px solid #ccc;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
+}
+
+.module1-scope .case-type-option:hover {
+  border-color: #000;
+  background: #fff;
+}
+
+.module1-scope .case-type-option.selected {
+  border-color: #000;
+  border-width: 3px;
+  background: #fff;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.module1-scope .case-type-option input[type="radio"] {
+  display: none;
+}
+
+.module1-scope .option-content h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.module1-scope .option-content p {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Advisory Form */
+.module1-scope .form-description {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.module1-scope .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.module1-scope .file-list {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+}
+
+.module1-scope .file-list p {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.module1-scope .file-list ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.module1-scope .file-list li {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px dotted #ccc;
+}
+
+.module1-scope .file-list li:last-child {
+  border-bottom: none;
+}
+
+.module1-scope .submit-button {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.module1-scope .submit-button:hover {
+  background: #333;
+}
+
+/* Advisory Results View */
+.module1-scope .results-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.module1-scope .results-section:last-of-type {
+  border-bottom: none;
+}
+
+.module1-scope .info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.module1-scope .info-item {
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+}
+
+.module1-scope .info-label {
+  display: block;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.module1-scope .info-value {
+  display: block;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
+  color: #000;
+}
+
+.module1-scope .analysis-content {
+  background: #fafafa;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.module1-scope .analysis-bold {
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.module1-scope .results-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.module1-scope .action-button {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 24px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  transition: all 0.2s;
+}
+
+.module1-scope .action-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+.module1-scope .action-button.primary {
+  background: #000;
+  color: #fff;
+}
+
+.module1-scope .action-button.primary:hover {
+  background: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .module1-scope .case-type-options {
+    flex-direction: column;
+  }
+
+  .module1-scope .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .module1-scope .results-actions {
+    flex-direction: column;
+  }
+
+  .module1-scope .action-button {
+    width: 100%;
+  }
+}

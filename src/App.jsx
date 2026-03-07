@@ -4,7 +4,7 @@ import ChatPanel from './components/ChatPanel/ChatPanel';
 import DebateArena from './components/DebateArena/DebateArena';
 import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 import CreateCaseModal from './components/CreateCaseModal/CreateCaseModal';
-import UploadModal from './components/UploadModal';
+import Module1App from './module1/Module1App';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -45,14 +45,16 @@ function App() {
     setIsUploadModalOpen(true);
   };
 
-  const handleModalConfirm = async (caseName) => {
+  const handleModalConfirm = async (caseName, folderPathOverride = null) => {
     setShowModal(false);
+
+    const activeFolder = folderPathOverride || pendingFolder;
 
     // We immediately create an "optimistic" or "loading" case so the UI switches to ChatPanel immediately
     const tempCase = {
       id: `case-${Date.now()}`,
       case_name: caseName,
-      folder_path: pendingFolder,
+      folder_path: activeFolder,
       victim: '',
       accused: '',
       sections: '',
@@ -69,7 +71,7 @@ function App() {
       try {
         const newCase = await window.electronAPI.parseCaseMetadata({
           caseId: tempCase.id,
-          folderPath: pendingFolder,
+          folderPath: activeFolder,
           caseName: caseName
         });
 
@@ -186,9 +188,17 @@ function App() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden relative">
 
-          {/* New Module 1 Upload Modal Overlay */}
+          {/* New Module 1 Overlay (Fully imported UI) */}
           {isUploadModalOpen && (
-            <UploadModal onClose={() => setIsUploadModalOpen(false)} />
+            <div className="fixed inset-0 z-50 bg-white grid overflow-y-auto">
+              <Module1App
+                onClose={() => setIsUploadModalOpen(false)}
+                onComplete={async (caseTitle, folderPath) => {
+                  setIsUploadModalOpen(false);
+                  await handleModalConfirm(caseTitle, folderPath);
+                }}
+              />
+            </div>
           )}
 
           {/* Modal Overlay Layer */}
