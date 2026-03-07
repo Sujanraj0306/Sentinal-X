@@ -546,10 +546,9 @@ ipcMain.handle('request-strategic-analysis', async (event, { query, caseId, fold
 
           event.sender.send('debate-node-status', { agent: 'Master Judge', status: 'Synthesizing...' });
           const finalDebateLog = [...geminiStrategies, ...localCritiques].join('\n\n');
-          const masterPrompt = `${safetyBypass} \n\nYou are the Master Judge LLM in a Legal War Room. Review the following 1v1 clashes between Team Gemini (Cloud) and Team Local (Ollama). Synthesize them and issue a final, robust "Master Verdict" recommendation. Use Google Search to verify any cited case laws or statutes. If and only if the user query explicitly requested to draft or create a petition, YOU MUST USE the call_petition_draftsman tool to delegate the petition generation task.\n\nDebate Outputs: \n${finalDebateLog} \n\nFinal Verdict: `;
+          const masterPrompt = `${safetyBypass} \n\nYou are the Master Judge LLM in a Legal War Room. Review the following 1v1 clashes between Team Gemini (Cloud) and Team Local (Ollama). Synthesize them and issue a final, robust "Master Verdict" recommendation. If and only if the user query explicitly requested to draft or create a petition, YOU MUST USE the call_petition_draftsman tool to delegate the petition generation task.\n\nDebate Outputs: \n${finalDebateLog} \n\nFinal Verdict: `;
 
           const judgeTools = [
-               { googleSearch: {} },
                { functionDeclarations: [{ name: "call_petition_draftsman", description: "Call this tool if the user explicitly requests to draft or create a petition. Provide strategic instructions for the draftsman.", parameters: { type: "OBJECT", properties: { instructions: { type: "STRING" } }, required: ["instructions"] } }] }
           ];
 
@@ -696,8 +695,27 @@ Place: [Location]
 Date: [Current Date]
 Signature \n Petitioner / Advocate`;
 
+const bailDraftsmanPrompt = `You are an expert Indian Criminal Defense Advocate. Your sole job is to draft formal bail applications based on the case facts. You MUST strictly output your response using this exact markdown structure, filling in the bracketed information:
+IN THE COURT OF [Appropriate Court based on offenses, e.g., Sessions Court]
+Bail Application No: [Leave blank]
+Applicant: [Name of the Accused]
+Versus
+Respondent: State rep. by Inspector of Police, [Police Station Name]
+BAIL APPLICATION
+Most Respectfully Submitted:
+That the applicant was arrested on [Date, if known, else 'recently'] in connection with FIR No. [FIR Number] under Sections [List Sections] of IPC/BNS.
+That the applicant is innocent and has been falsely implicated in this case due to [Briefly state 1-2 defense arguments from the Master Judge's strategy].
+That the applicant is a permanent resident of [Location] and has deep roots in society, posing no flight risk.
+That the applicant undertakes to cooperate fully with the investigation and not tamper with any evidence or witnesses.
+That the applicant undertakes to appear before the court whenever required.
+PRAYER
+Therefore, it is respectfully prayed that this Honorable Court may kindly grant bail to the applicant in the interest of justice.
+Place: [Location]
+Date: [Current Date]
+Signature \n Advocate for Applicant`;
+
 ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
-     if (tool !== 'petition') return { status: 'error', error: 'Unknown tool' };
+     if (tool !== 'petition' && tool !== 'bail_application') return { status: 'error', error: 'Unknown tool' };
      const apiKey = getGeminiApiKey();
      if (!apiKey) return { status: 'error', error: 'No API Key configured.' };
 
@@ -705,11 +723,20 @@ ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
           const GoogleGenAI = await getGoogleGenAIClass();
           const ai = new GoogleGenAI({ apiKey });
 
-          const prompt = `${draftsmanPrompt}\n\nCase Context and Strategy to convert into Petition:\n${context}`;
+          let promptStr = "";
+          let outputPrefix = "";
+
+          if (tool === 'bail_application') {
+               promptStr = `${bailDraftsmanPrompt}\n\nCase Context and Strategy to convert into Bail Application:\n${context}`;
+               outputPrefix = "Bail_Application";
+          } else {
+               promptStr = `${draftsmanPrompt}\n\nCase Context and Strategy to convert into Petition:\n${context}`;
+               outputPrefix = "Petition";
+          }
 
           const res = await ai.models.generateContent({
                model: 'gemini-2.5-pro',
-               contents: prompt
+               contents: promptStr
           });
 
           const markdown_content = res.text;
@@ -717,7 +744,7 @@ ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
           // Call MCP tool
           const mcpRes = await mcpClient.callTool({
                name: "generate_petition",
-               arguments: { markdown_content, output_filename: `petition_${Date.now()}.pdf` }
+               arguments: { markdown_content, output_filename: `${outputPrefix}_${Date.now()}.pdf` }
           });
 
           let toolResult = mcpRes.content[0].text;
