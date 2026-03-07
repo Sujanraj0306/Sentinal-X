@@ -18,7 +18,7 @@ const Chat = ({ selectedSites }) => {
         try {
             // site.name is now a full URL (e.g. "https://www.thehindu.com/news/national/")
             const siteUrls = selectedSites.map(site => site.name);
-            const response = await axios.post('http://localhost:8001/api/chat', {
+            const response = await axios.post('http://127.0.0.1:8001/api/chat', {
                 query: query,
                 sites: siteUrls
             });

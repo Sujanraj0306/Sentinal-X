@@ -73,8 +73,8 @@ class TextPreprocessor:
             try:
                 import certifi
                 os.environ["SSL_CERT_FILE"] = certifi.where()
-                self.model = genai.GenerativeModel('gemini-1.5-flash')
-                logger.info("Gemini model initialized for translation (gemini-1.5-flash)")
+                self.model = genai.GenerativeModel('gemini-2.0-flash')
+                logger.info("Gemini model initialized for translation (gemini-2.0-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_translation = False
