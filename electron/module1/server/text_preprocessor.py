@@ -166,10 +166,24 @@ Only provide the translation, no explanations.
 Text to translate:
 {text}"""
             
-            response = self.model.generate_content(prompt)
-            translated_text = response.text.strip()
+            import signal
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
             
-            logger.info(f"Translation completed. Original: {len(text)} chars, Translated: {len(translated_text)} chars")
+            def _call_gemini(p):
+                resp = self.model.generate_content(p)
+                return resp.text.strip()
+                
+            try:
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(_call_gemini, prompt)
+                translated_text = future.result(timeout=60)
+                logger.info(f"Translation completed. Original: {len(text)} chars, Translated: {len(translated_text)} chars")
+            except (TimeoutError, FuturesTimeoutError) as e:
+                logger.error("Translation API Failed: Timeout after 60s")
+                raise Exception("Translation timed out after 60 seconds")
+            finally:
+                if 'executor' in locals():
+                    executor.shutdown(wait=False)
             
             return {
                 "translated_text": translated_text,

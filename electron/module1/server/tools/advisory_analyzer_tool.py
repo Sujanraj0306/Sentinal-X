@@ -88,7 +88,7 @@ class AdvisoryAnalyzer:
             try:
                 executor = ThreadPoolExecutor(max_workers=1)
                 future = executor.submit(_call_gemini, prompt)
-                analysis_text = future.result(timeout=60)
+                analysis_text = future.result(timeout=180)
                 
                 result = {
                     "analysis": analysis_text,
@@ -101,7 +101,17 @@ class AdvisoryAnalyzer:
                 logger.info("Advisory analysis generated successfully")
                 return result
                 
-            except (TimeoutError, FuturesTimeoutError, Exception) as e:
+            except (TimeoutError, FuturesTimeoutError) as e:
+                logger.error("API Failed: Timeout after 180s")
+                return {
+                    "analysis": "Error generating advisory analysis: The request timed out after 180 seconds. Please try again with a shorter text.",
+                    "domain": domain,
+                    "generated_at": datetime.now().isoformat(),
+                    "model_used": "api_timeout",
+                    "context_docs_count": len(retrieved_docs),
+                    "error": "TimeoutError"
+                }
+            except Exception as e:
                 logger.error(f"API Failed: {str(e)}")
                 return {
                     "analysis": f"API Error: {str(e)}",

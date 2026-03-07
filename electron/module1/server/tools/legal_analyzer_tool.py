@@ -180,7 +180,7 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
             prompt = self.generate_analysis_prompt(facts, sections, domain, evidence)
             
             # Get analysis from Gemini with real timeout
-            logger.info("Requesting analysis from Gemini API (gemini-2.0-flash, 30s timeout)...")
+            logger.info("Requesting analysis from Gemini API (gemini-2.0-flash, 180s timeout)...")
             
             import signal
             from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
@@ -192,10 +192,21 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
             try:
                 executor = ThreadPoolExecutor(max_workers=1)
                 future = executor.submit(_call_gemini, prompt)
-                analysis_text = future.result(timeout=30)
+                analysis_text = future.result(timeout=180)
                 logger.info(f"Analysis generated ({len(analysis_text)} chars)")
                 
-            except (TimeoutError, FuturesTimeoutError, Exception) as e:
+            except (TimeoutError, FuturesTimeoutError) as e:
+                logger.error("API Failed: Timeout after 180s")
+                return {
+                    "analysis": "Error generating legal analysis: The request timed out after 180 seconds. Please try again with a shorter text.",
+                    "method": "api_timeout",
+                    "domain": domain,
+                    "sections_analyzed": len(sections),
+                    "facts_length": len(facts),
+                    "has_evidence": evidence is not None,
+                    "error": "TimeoutError"
+                }
+            except Exception as e:
                 logger.error(f"API Failed: {str(e)}")
                 # Return cleanly formatted error JSON
                 return {
