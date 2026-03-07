@@ -6,10 +6,12 @@ import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 import CreateCaseModal from './components/CreateCaseModal/CreateCaseModal';
 import Module1App from './module1/Module1App';
 import ErrorBoundary from './components/ErrorBoundary';
+import LLMSearchApp from '../The_legal_llm_search/thellmsearch/src/App';
 
 function App() {
   const [cases, setCases] = useState([]);
   const [activeCase, setActiveCase] = useState(null);
+  const [currentView, setCurrentView] = useState('war-room'); // 'war-room' or 'llm-search'
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -182,6 +184,8 @@ function App() {
             onSelectCase={handleSelectCase}
             onCreateCase={handleCreateCaseRequest}
             onDeleteCase={handleDeleteCase}
+            currentView={currentView}
+            setCurrentView={setCurrentView}
           />
         </div>
 
@@ -210,30 +214,39 @@ function App() {
             />
           )}
 
-          {!activeCase && !showModal ? (
-            // Welcome Screen state
-            <div className="flex-1 h-full w-full">
-              <WelcomeScreen
-                cases={cases}
-                onSelectCase={handleSelectCase}
-                onCreateCase={handleCreateCaseRequest}
-              />
+          {/* Conditional View Rendering */}
+          {currentView === 'llm-search' ? (
+            <div className="flex-1 h-full w-full overflow-hidden bg-[#131314]">
+              <LLMSearchApp setCurrentView={setCurrentView} />
             </div>
           ) : (
-            // Active Chat Interface (2 panes)
             <>
-              {/* Center Pane: Chat & Evidence */}
-              <div className="flex-1 border-r-2 border-gray-200 h-full">
-                <ChatPanel
-                  activeCase={activeCase}
-                  onStrategyRequested={triggerDebateVisuals}
-                />
-              </div>
+              {!activeCase && !showModal ? (
+                // Welcome Screen state
+                <div className="flex-1 h-full w-full">
+                  <WelcomeScreen
+                    cases={cases}
+                    onSelectCase={handleSelectCase}
+                    onCreateCase={handleCreateCaseRequest}
+                  />
+                </div>
+              ) : (
+                // Active Chat Interface (2 panes)
+                <>
+                  {/* Center Pane: Chat & Evidence */}
+                  <div className="flex-1 border-r-2 border-gray-200 h-full">
+                    <ChatPanel
+                      activeCase={activeCase}
+                      onStrategyRequested={triggerDebateVisuals}
+                    />
+                  </div>
 
-              {/* Right Pane: War Arena Visualizer */}
-              <div className="w-1/3 min-w-[300px] h-full bg-gray-50">
-                <DebateArena activeCase={activeCase} />
-              </div>
+                  {/* Right Pane: War Arena Visualizer */}
+                  <div className="w-1/3 min-w-[300px] h-full bg-gray-50">
+                    <DebateArena activeCase={activeCase} />
+                  </div>
+                </>
+              )}
             </>
           )}
 
