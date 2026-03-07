@@ -18,7 +18,7 @@ const Chat = ({ selectedSites }) => {
         try {
             // site.name is now a full URL (e.g. "https://www.thehindu.com/news/national/")
             const siteUrls = selectedSites.map(site => site.name);
-            const response = await axios.post('http://localhost:8000/api/chat', {
+            const response = await axios.post('http://localhost:8001/api/chat', {
                 query: query,
                 sites: siteUrls
             });
@@ -66,7 +66,7 @@ const Chat = ({ selectedSites }) => {
             console.error("Error communicating with backend:", error);
             const updatedMessages = [...newMessages];
             updatedMessages[updatedMessages.length - 1].response = {
-                answer: [{ type: 'paragraph', content: `Error: Could not reach the backend. Make sure the backend server is running on port 8000.\n\nDetails: ${error.message}` }],
+                answer: [{ type: 'paragraph', content: `Error: Could not reach the backend. Make sure the backend server is running on port 8001.\n\nDetails: ${error.message}` }],
                 sources: []
             };
             setMessages(updatedMessages);

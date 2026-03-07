@@ -26,6 +26,8 @@ from tools.legal_analyzer_tool import legal_analyzer
 from tools.report_generator_tool import report_generator
 from orchestrator import case_orchestrator
 from advisory_orchestrator import advisory_orchestrator
+from tools.legal_search_llm import OllamaSearchAgent
+import asyncio
 
 # Configure logging
 request_id_context: ContextVar[str] = ContextVar("request_id", default="system")
@@ -137,6 +139,13 @@ class GenerateReportRequest(BaseModel):
     save_markdown: bool = True
 
 
+class ChatRequest(BaseModel):
+    """Request model for LLM Search querying."""
+    query: str
+    sites: List[str]
+    model: str = 'llama3:latest'
+
+
 # Orchestrated case analysis endpoint
 @app.post("/analyze-case")
 async def analyze_case(
@@ -229,6 +238,30 @@ async def analyze_advisory(
     )
     
     return result
+
+
+# LLM Search Chat endpoint
+@app.post("/api/chat")
+async def chat_endpoint(req: ChatRequest) -> Dict[str, Any]:
+    """
+    Search and synthesize answers from whitelisted URLs using Ollama.
+    """
+    if not req.sites:
+        raise HTTPException(status_code=400, detail="Must provide at least one site URL.")
+    if not req.query:
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+        
+    try:
+        def run_agent():
+            agent = OllamaSearchAgent(whitelist_urls=req.sites, model=req.model)
+            return agent.query(req.query)
+
+        result = await asyncio.to_thread(run_agent)
+        return result
+
+    except Exception as e:
+        logger.error(f"Error in LLM Search chat endpoint: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Health check endpoint
