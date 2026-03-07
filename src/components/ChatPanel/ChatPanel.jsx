@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from '../MarkdownRenderer';
 import useWhisper from '../../hooks/useWhisper';
-import { Wrench, FileText, Download, Loader2, Scale } from 'lucide-react';
+import { Wrench, FileText, Download, Loader2, Scale, MailWarning } from 'lucide-react';
 
 export default function ChatPanel({ activeCase, onStrategyRequested }) {
      const [messages, setMessages] = useState([]);
@@ -136,7 +136,7 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                setMessages(prev => prev.filter(m => m.id !== loadingMsgId)); // Remove loading
 
                if (response.status === 'success') {
-                    const docName = toolName === 'bail_application' ? 'Bail Application' : 'Petition';
+                    const docName = toolName === 'bail_application' ? 'Bail Application' : toolName === 'legal_notice' ? 'Legal Notice' : 'Petition';
                     const sysMsg = { case_id: activeCase.id, role: 'system', content: `${docName} Generated Successfully.`, markdown: response.markdown, file_path: response.file_path, timestamp: new Date().toISOString() };
                     setMessages(prev => [...prev, sysMsg]);
                     await window.electronAPI.saveMessage(sysMsg);
@@ -398,6 +398,14 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                                              >
                                                   <Scale className="w-4 h-4" />
                                                   Bail Application Generator
+                                             </button>
+                                             <button
+                                                  type="button"
+                                                  onClick={() => handleManualTool('legal_notice')}
+                                                  className="flex items-center gap-3 px-4 py-4 text-left text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors border-b border-gray-100"
+                                             >
+                                                  <MailWarning className="w-4 h-4" />
+                                                  Legal Notice Generator
                                              </button>
                                         </div>
                                    )}

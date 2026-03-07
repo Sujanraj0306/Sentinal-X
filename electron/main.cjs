@@ -714,8 +714,42 @@ Place: [Location]
 Date: [Current Date]
 Signature \n Advocate for Applicant`;
 
+const legalNoticeDraftsmanPrompt = `You are an expert Indian Legal Draftsman. Your sole job is to draft formal Legal Notices based on the case facts. You MUST strictly output your response using this exact markdown structure, filling in the bracketed information appropriately:
+
+**[ADVOCATE NAME/CHAMBERS]**
+[Advocate Address & Contact]
+
+**Ref No:** [Leave blank]  |  **Date:** [Current Date]
+
+**REGISTERED POST WITH A.D.**
+
+**To,**
+[Name and Address of the Accused/Opposite Party]
+
+**Subject: LEGAL NOTICE under [Applicable Law, e.g., IPC/BNS]**
+
+Sir/Madam,
+
+Under the instructions from and on behalf of my client, [Name of Victim/Complainant], residing at [Client's Address], I do hereby serve you with the following Legal Notice:
+
+1. That my client is a law-abiding citizen and [Brief introduction based on facts].
+2. That you, the addressee, have [State the core offense/breach based on facts].
+3. That specifically, on or around [Date of incident], you [Detail the incident, e.g., defrauded my client / assaulted my client].
+4. [Add 1-2 paragraphs detailing the legal implications and Master Judge's findings].
+5. That your actions constitute serious offenses punishable under Sections [List Applicable IPC/BNS Sections].
+
+I therefore, through this Notice, call upon you to [Specific Demand: e.g., return the defrauded amount / cease and desist] within 15 days from the receipt of this Notice.
+
+Please take note that if you fail to comply with this demand within the stipulated time, I have clear instructions from my client to initiate appropriate civil and/or criminal proceedings against you in a court of competent jurisdiction, holding you liable for all costs and consequences thereof.
+
+A copy of this notice is kept in my office for future reference.
+
+**Yours faithfully,**
+[Signature]
+Advocate for [Client Name]`;
+
 ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
-     if (tool !== 'petition' && tool !== 'bail_application') return { status: 'error', error: 'Unknown tool' };
+     if (tool !== 'petition' && tool !== 'bail_application' && tool !== 'legal_notice') return { status: 'error', error: 'Unknown tool' };
      const apiKey = getGeminiApiKey();
      if (!apiKey) return { status: 'error', error: 'No API Key configured.' };
 
@@ -729,6 +763,9 @@ ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
           if (tool === 'bail_application') {
                promptStr = `${bailDraftsmanPrompt}\n\nCase Context and Strategy to convert into Bail Application:\n${context}`;
                outputPrefix = "Bail_Application";
+          } else if (tool === 'legal_notice') {
+               promptStr = `${legalNoticeDraftsmanPrompt}\n\nCase Context and Strategy to convert into Legal Notice:\n${context}`;
+               outputPrefix = "Legal_Notice";
           } else {
                promptStr = `${draftsmanPrompt}\n\nCase Context and Strategy to convert into Petition:\n${context}`;
                outputPrefix = "Petition";

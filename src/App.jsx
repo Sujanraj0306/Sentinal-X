@@ -4,6 +4,7 @@ import ChatPanel from './components/ChatPanel/ChatPanel';
 import DebateArena from './components/DebateArena/DebateArena';
 import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 import CreateCaseModal from './components/CreateCaseModal/CreateCaseModal';
+import UploadModal from './components/UploadModal';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [pendingFolder, setPendingFolder] = useState(null);
   const [ssdDisconnected, setSsdDisconnected] = useState(false);
 
@@ -39,22 +41,8 @@ function App() {
     }
   }, []);
 
-  const handleCreateCaseRequest = async () => {
-    if (window.electronAPI) {
-      try {
-        const folderPath = await window.electronAPI.selectCaseFolder();
-        if (folderPath) {
-          setPendingFolder(folderPath);
-          setShowModal(true);
-        }
-      } catch (error) {
-        console.error('Case selection failed:', error);
-      }
-    } else {
-      // Mock for UI prototyping
-      setPendingFolder('/mock/path/v3');
-      setShowModal(true);
-    }
+  const handleCreateCaseRequest = () => {
+    setIsUploadModalOpen(true);
   };
 
   const handleModalConfirm = async (caseName) => {
@@ -197,6 +185,11 @@ function App() {
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden relative">
+
+          {/* New Module 1 Upload Modal Overlay */}
+          {isUploadModalOpen && (
+            <UploadModal onClose={() => setIsUploadModalOpen(false)} />
+          )}
 
           {/* Modal Overlay Layer */}
           {showModal && (
