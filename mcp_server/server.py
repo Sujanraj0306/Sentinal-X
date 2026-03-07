@@ -242,28 +242,31 @@ async def generate_petition(markdown_content: str, output_filename: str = "petit
         
         lines = markdown_content.split('\n')
         for line in lines:
-            # Clean generic markdown bold/heading chars
-            clean_line = line.replace('**', '').replace('__', '').strip()
+            stripped = line.strip()
+            
+            if not stripped:
+                pdf.ln(5)
+                continue
+            
+            # Detect if the raw line was wrapped in **bold** markdown
+            has_bold_markers = '**' in stripped
+            # Clean markdown characters for PDF text
+            clean_line = stripped.replace('**', '').replace('__', '').lstrip('#').strip()
             
             if not clean_line:
-                # Insert vertical gap for empty line
-                pdf.ln(5)
+                pdf.ln(3)
+                continue
+            
+            # Determine bold: explicit ** markers, all-uppercase legal headings, or # headings
+            is_bold = has_bold_markers or (clean_line.isupper() and len(re.sub(r'[^A-Z]', '', clean_line)) > 3) or stripped.startswith('#')
+            
+            if is_bold:
+                pdf.set_font("Times", style="B", size=12)
             else:
-                # Check for headings or explicit uppercase legal lines
-                is_bold = False
-                if (clean_line.isupper() and len(re.sub(r'[^A-Z]', '', clean_line)) > 3) or clean_line.startswith("#"):
-                    is_bold = True
-                    clean_line = clean_line.lstrip("#").strip()
-                
-                if is_bold:
-                    pdf.set_font("Times", style="B", size=12)
-                else:
-                    pdf.set_font("Times", style="", size=12)
-                
-                # Render line
-                pdf.multi_cell(0, 7, txt=clean_line)
-                # Small intra-paragraph or line spacing
-                pdf.ln(2)
+                pdf.set_font("Times", style="", size=12)
+            
+            pdf.multi_cell(0, 7, txt=clean_line)
+            pdf.ln(2)
                 
         pdf.output(pdf_path)
         
