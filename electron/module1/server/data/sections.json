@@ -1,0 +1,298 @@
+{
+     "IPC": {
+          "Assault": [
+               {
+                    "section": "323",
+                    "title": "Punishment for voluntarily causing hurt",
+                    "description": "Whoever, except in the case provided for by section 334, voluntarily causes hurt, shall be punished with imprisonment of either description for a term which may extend to one year, or with fine which may extend to one thousand rupees, or with both.",
+                    "punishment": "Imprisonment up to 1 year or fine up to Rs. 1000 or both",
+                    "bailable": true,
+                    "cognizable": true
+               },
+               {
+                    "section": "324",
+                    "title": "Voluntarily causing hurt by dangerous weapons or means",
+                    "description": "Whoever, except in the case provided for by section 334, voluntarily causes hurt by means of any instrument for shooting, stabbing or cutting, or any instrument which, used as weapon of offence, is likely to cause death.",
+                    "punishment": "Imprisonment up to 3 years or fine or both",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "325",
+                    "title": "Punishment for voluntarily causing grievous hurt",
+                    "description": "Whoever, except in the case provided for by section 335, voluntarily causes grievous hurt, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "351",
+                    "title": "Assault",
+                    "description": "Whoever makes any gesture, or any preparation intending or knowing it to be likely that such gesture or preparation will cause any person present to apprehend that he who makes that gesture or preparation is about to use criminal force to that person, is said to commit an assault.",
+                    "punishment": "Imprisonment up to 2 months or fine up to Rs. 100 or both",
+                    "bailable": true,
+                    "cognizable": true
+               }
+          ],
+          "Murder": [
+               {
+                    "section": "302",
+                    "title": "Punishment for murder",
+                    "description": "Whoever commits murder shall be punished with death, or imprisonment for life, and shall also be liable to fine.",
+                    "punishment": "Death or life imprisonment and fine",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "304",
+                    "title": "Punishment for culpable homicide not amounting to murder",
+                    "description": "Whoever commits culpable homicide not amounting to murder shall be punished with imprisonment for life, or imprisonment of either description for a term which may extend to ten years, and shall also be liable to fine.",
+                    "punishment": "Life imprisonment or up to 10 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Theft": [
+               {
+                    "section": "379",
+                    "title": "Punishment for theft",
+                    "description": "Whoever commits theft shall be punished with imprisonment of either description for a term which may extend to three years, or with fine, or with both.",
+                    "punishment": "Imprisonment up to 3 years or fine or both",
+                    "bailable": true,
+                    "cognizable": true
+               },
+               {
+                    "section": "380",
+                    "title": "Theft in dwelling house, etc.",
+                    "description": "Whoever commits theft in any building, tent or vessel, which building, tent or vessel is used as a human dwelling, or used for the custody of property, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Fraud/Cheating": [
+               {
+                    "section": "420",
+                    "title": "Cheating and dishonestly inducing delivery of property",
+                    "description": "Whoever cheats and thereby dishonestly induces the person deceived to deliver any property to any person, or to make, alter or destroy the whole or any part of a valuable security, or anything which is signed or sealed, and which is capable of being converted into a valuable security, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "415",
+                    "title": "Cheating",
+                    "description": "Whoever, by deceiving any person, fraudulently or dishonestly induces the person so deceived to deliver any property to any person, or to consent that any person shall retain any property, or intentionally induces the person so deceived to do or omit to do anything which he would not do or omit if he were not so deceived, and which act or omission causes or is likely to cause damage or harm to that person in body, mind, reputation or property, is said to 'cheat'.",
+                    "punishment": "Imprisonment up to 1 year or fine or both",
+                    "bailable": true,
+                    "cognizable": false
+               }
+          ],
+          "Rape/Sexual Assault": [
+               {
+                    "section": "376",
+                    "title": "Punishment for rape",
+                    "description": "Whoever commits rape shall be punished with rigorous imprisonment of either description for a term which shall not be less than ten years, but which may extend to imprisonment for life, and shall also be liable to fine.",
+                    "punishment": "Minimum 10 years, may extend to life imprisonment and fine",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "354",
+                    "title": "Assault or criminal force to woman with intent to outrage her modesty",
+                    "description": "Whoever assaults or uses criminal force to any woman, intending to outrage or knowing it to be likely that he will thereby outrage her modesty, shall be punished with imprisonment of either description for a term which shall not be less than one year but which may extend to five years, and shall also be liable to fine.",
+                    "punishment": "Minimum 1 year, up to 5 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Kidnapping": [
+               {
+                    "section": "363",
+                    "title": "Punishment for kidnapping",
+                    "description": "Whoever kidnaps any person from India or from lawful guardianship, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               },
+               {
+                    "section": "365",
+                    "title": "Kidnapping or abducting with intent secretly and wrongfully to confine person",
+                    "description": "Whoever kidnaps or abducts any person with intent to cause that person to be secretly and wrongfully confined, shall be punished with imprisonment of either description for a term which may extend to seven years, and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Domestic Violence": [
+               {
+                    "section": "498A",
+                    "title": "Husband or relative of husband of a woman subjecting her to cruelty",
+                    "description": "Whoever, being the husband or the relative of the husband of a woman, subjects such woman to cruelty shall be punished with imprisonment for a term which may extend to three years and shall also be liable to fine.",
+                    "punishment": "Imprisonment up to 3 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Dowry": [
+               {
+                    "section": "304B",
+                    "title": "Dowry death",
+                    "description": "Where the death of a woman is caused by any burns or bodily injury or occurs otherwise than under normal circumstances within seven years of her marriage and it is shown that soon before her death she was subjected to cruelty or harassment by her husband or any relative of her husband for, or in connection with, any demand for dowry, such death shall be called 'dowry death', and such husband or relative shall be deemed to have caused her death.",
+                    "punishment": "Imprisonment not less than 7 years, may extend to life",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ]
+     },
+     "IT_ACT": {
+          "Hacking": [
+               {
+                    "section": "66",
+                    "title": "Computer related offences",
+                    "description": "If any person, dishonestly or fraudulently, does any act referred to in section 43, he shall be punishable with imprisonment for a term which may extend to three years or with fine which may extend to five lakh rupees or with both.",
+                    "punishment": "Imprisonment up to 3 years or fine up to Rs. 5 lakhs or both",
+                    "bailable": true,
+                    "cognizable": true
+               },
+               {
+                    "section": "43",
+                    "title": "Penalty and Compensation for damage to computer, computer system, etc.",
+                    "description": "If any person without permission of the owner or any other person who is in charge of a computer, computer system or computer network, accesses or secures access to such computer, computer system or computer network or computer resource.",
+                    "punishment": "Damages by way of compensation up to Rs. 1 crore",
+                    "bailable": true,
+                    "cognizable": false
+               }
+          ],
+          "Phishing": [
+               {
+                    "section": "66D",
+                    "title": "Punishment for cheating by personation by using computer resource",
+                    "description": "Whoever, by means of any communication device or computer resource cheats by personation, shall be punished with imprisonment of either description for a term which may extend to three years and shall also be liable to fine which may extend to one lakh rupees.",
+                    "punishment": "Imprisonment up to 3 years and fine up to Rs. 1 lakh",
+                    "bailable": true,
+                    "cognizable": true
+               }
+          ],
+          "Identity Theft": [
+               {
+                    "section": "66C",
+                    "title": "Punishment for identity theft",
+                    "description": "Whoever, fraudulently or dishonestly make use of the electronic signature, password or any other unique identification feature of any other person, shall be punished with imprisonment of either description for a term which may extend to three years and shall also be liable to fine which may extend to rupees one lakh.",
+                    "punishment": "Imprisonment up to 3 years and fine up to Rs. 1 lakh",
+                    "bailable": true,
+                    "cognizable": true
+               }
+          ],
+          "Data Breach": [
+               {
+                    "section": "43A",
+                    "title": "Compensation for failure to protect data",
+                    "description": "Where a body corporate, possessing, dealing or handling any sensitive personal data or information in a computer resource which it owns, controls or operates, is negligent in implementing and maintaining reasonable security practices and procedures and thereby causes wrongful loss or wrongful gain to any person, such body corporate shall be liable to pay damages by way of compensation to the person so affected.",
+                    "punishment": "Damages by way of compensation",
+                    "bailable": true,
+                    "cognizable": false
+               }
+          ],
+          "Cyberbullying": [
+               {
+                    "section": "66A",
+                    "title": "Punishment for sending offensive messages through communication service, etc.",
+                    "description": "Any person who sends, by means of a computer resource or a communication device, any information that is grossly offensive or has menacing character; or any information which he knows to be false, but for the purpose of causing annoyance, inconvenience, danger, obstruction, insult, injury, criminal intimidation, enmity, hatred or ill will.",
+                    "punishment": "Imprisonment up to 3 years and fine",
+                    "bailable": true,
+                    "cognizable": true,
+                    "note": "Section 66A was struck down by Supreme Court in 2015"
+               }
+          ]
+     },
+     "CrPC": {
+          "FIR": [
+               {
+                    "section": "154",
+                    "title": "Information in cognizable cases",
+                    "description": "Every information relating to the commission of a cognizable offence, if given orally to an officer in charge of a police station, shall be reduced to writing by him or under his direction, and be read over to the informant; and every such information, whether given in writing or reduced to writing as aforesaid, shall be signed by the person giving it.",
+                    "type": "Procedural"
+               }
+          ],
+          "Arrest": [
+               {
+                    "section": "41",
+                    "title": "When police may arrest without warrant",
+                    "description": "Any police officer may without an order from a Magistrate and without a warrant, arrest any person who has been concerned in any cognizable offence, or against whom a reasonable complaint has been made, or credible information has been received, or a reasonable suspicion exists, of his having been so concerned.",
+                    "type": "Procedural"
+               },
+               {
+                    "section": "41A",
+                    "title": "Notice of appearance before police officer",
+                    "description": "The police officer shall, in all cases where the arrest of a person is not required under the provisions of sub-section (1) of section 41, issue a notice directing the person against whom a reasonable complaint has been made, or credible information has been received, or a reasonable suspicion exists, of his having committed a cognizable offence, to appear before him or at such other place as may be specified in the notice.",
+                    "type": "Procedural"
+               }
+          ],
+          "Bail": [
+               {
+                    "section": "436",
+                    "title": "In what cases bail to be taken",
+                    "description": "When any person other than a person accused of a non-bailable offence is arrested or detained without warrant by an officer in charge of a police station, or appears or is brought before a Court, and is prepared at any time while in the custody of such officer or at any stage of the proceeding before such Court to give bail, such person shall be released on bail.",
+                    "type": "Procedural"
+               },
+               {
+                    "section": "437",
+                    "title": "When bail may be taken in case of non-bailable offence",
+                    "description": "When any person accused of, or suspected of, the commission of any non-bailable offence is arrested or detained without warrant by an officer in charge of a police station or appears or is brought before a Court other than the High Court or Court of Session, he may be released on bail.",
+                    "type": "Procedural"
+               }
+          ]
+     },
+     "BNS": {
+          "note": "Bharatiya Nyaya Sanhita (BNS) 2023 - New criminal code replacing IPC",
+          "Assault": [
+               {
+                    "section": "115",
+                    "title": "Voluntarily causing hurt",
+                    "description": "Corresponding to IPC 323 - Punishment for voluntarily causing hurt",
+                    "punishment": "Imprisonment up to 1 year or fine up to Rs. 10,000 or both",
+                    "bailable": true,
+                    "cognizable": true
+               },
+               {
+                    "section": "117",
+                    "title": "Voluntarily causing grievous hurt",
+                    "description": "Corresponding to IPC 325 - Punishment for voluntarily causing grievous hurt",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Murder": [
+               {
+                    "section": "103",
+                    "title": "Punishment for murder",
+                    "description": "Corresponding to IPC 302 - Whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine",
+                    "punishment": "Death or life imprisonment and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ],
+          "Theft": [
+               {
+                    "section": "303",
+                    "title": "Punishment for theft",
+                    "description": "Corresponding to IPC 379 - Whoever commits theft shall be punished with imprisonment of either description for a term which may extend to three years, or with fine, or with both",
+                    "punishment": "Imprisonment up to 3 years or fine or both",
+                    "bailable": true,
+                    "cognizable": true
+               }
+          ],
+          "Fraud/Cheating": [
+               {
+                    "section": "318",
+                    "title": "Cheating and dishonestly inducing delivery of property",
+                    "description": "Corresponding to IPC 420 - Cheating and dishonestly inducing delivery of property",
+                    "punishment": "Imprisonment up to 7 years and fine",
+                    "bailable": false,
+                    "cognizable": true
+               }
+          ]
+     }
+}

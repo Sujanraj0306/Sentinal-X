@@ -1,0 +1,147 @@
+# Property Law - India
+
+## Property Purchase and Sale
+
+### Due Diligence Checklist
+1. **Title Verification**
+   - Verify clear and marketable title
+   - Check for encumbrances, liens, or mortgages
+   - Verify ownership through title deed
+   - Check for any pending litigation
+
+2. **Document Verification**
+   - Sale Deed
+   - Encumbrance Certificate (EC) for last 30 years
+   - Property Tax Receipts
+   - Approved Building Plan
+   - Occupancy Certificate (OC)
+   - Completion Certificate (CC)
+
+3. **Legal Compliance**
+   - Verify zoning regulations
+   - Check building bylaws compliance
+   - Verify FSI (Floor Space Index) utilization
+   - Check for any violations or deviations
+
+### Registration Process
+- Stamp duty payment (varies by state: 5-7% of property value)
+- Registration fees (typically 1% of property value)
+- Documents required: Sale deed, ID proofs, PAN cards, photographs
+- Timeline: 4-6 weeks for complete registration
+
+### Key Legal Provisions
+- **Transfer of Property Act, 1882**: Governs property transfers
+- **Registration Act, 1908**: Mandates registration of property documents
+- **Indian Stamp Act, 1899**: Governs stamp duty
+
+## Property Tax
+
+### Assessment and Payment
+- Property tax is levied by municipal corporations
+- Based on Annual Rental Value (ARV) or Capital Value
+- Payment frequency: Annual, semi-annual, or quarterly
+- Penalties for non-payment: Interest @ 2% per month
+
+### Tax Exemptions
+- Agricultural land
+- Properties owned by charitable trusts
+- Government properties
+- Properties under construction
+
+## Rental and Lease Agreements
+
+### Essential Clauses
+1. Rent amount and payment terms
+2. Security deposit (typically 2-10 months' rent)
+3. Lock-in period
+4. Maintenance responsibilities
+5. Termination clause
+6. Notice period (typically 1-3 months)
+
+### Rent Control Act
+- Applicable in certain states
+- Protects tenant rights
+- Limits rent increases
+- Governs eviction procedures
+
+### Legal Requirements
+- Rent agreement should be registered if term > 11 months
+- Stamp duty applicable (varies by state)
+- Notarization recommended
+
+## Property Disputes
+
+### Common Disputes
+1. Boundary disputes
+2. Encroachment issues
+3. Title disputes
+4. Partition suits
+5. Adverse possession claims
+
+### Resolution Mechanisms
+- Negotiation and settlement
+- Mediation
+- Arbitration
+- Civil court litigation
+- Consumer forum (for builder disputes)
+
+## Real Estate Regulatory Authority (RERA)
+
+### Key Provisions
+- Mandatory registration for projects > 500 sq.m or 8 apartments
+- Protects homebuyer interests
+- Mandates project completion timelines
+- Provides for compensation for delays
+- Establishes dispute resolution mechanism
+
+### Homebuyer Rights
+- Right to information
+- Right to timely delivery
+- Right to quality construction
+- Right to compensation for defects
+- Right to refund with interest
+
+## Inheritance and Succession
+
+### Hindu Succession Act, 1956
+- Governs property inheritance for Hindus, Buddhists, Jains, Sikhs
+- Equal rights for sons and daughters
+- Class I heirs have priority
+
+### Muslim Personal Law
+- Governed by Sharia law
+- Fixed shares for heirs
+- Different rules for male and female heirs
+
+### Will and Testament
+- Must be in writing
+- Signed by testator
+- Witnessed by two persons
+- Can be registered (recommended)
+- Can be revoked or amended
+
+## Foreign Investment in Property
+
+### Restrictions
+- Foreign nationals cannot purchase agricultural land
+- Can purchase residential/commercial property
+- NRIs have same rights as resident Indians
+- OCIs can purchase residential/commercial property
+
+### Compliance Requirements
+- RBI approval for certain transactions
+- FEMA compliance
+- Tax implications (TDS, capital gains)
+
+## Key Recommendations for Property Transactions
+
+1. **Always conduct thorough due diligence**
+2. **Verify all documents with sub-registrar office**
+3. **Get legal opinion from property lawyer**
+4. **Check for any pending litigation**
+5. **Verify property boundaries physically**
+6. **Ensure all taxes are paid up to date**
+7. **Get title insurance (if available)**
+8. **Register all property documents**
+9. **Keep all original documents safe**
+10. **Maintain proper records of all transactions**
