@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "concurrently -k \"vite\" \"electron .\" \"cd electron/module1/server && ../../../mcp_server/venv/bin/python main.py\""
+    "start": "concurrently -k \"vite\" \"electron .\" \"./start_module1.sh\""
   },
   "dependencies": {
     "@google/genai": "^1.44.0",
