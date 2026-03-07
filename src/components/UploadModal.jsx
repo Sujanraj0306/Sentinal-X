@@ -36,9 +36,20 @@ export default function UploadModal({ onClose }) {
           setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
      };
 
-     const handleProcessFiles = () => {
-          // Placeholder for future processing logic
-          console.log("Processing files:", files);
+     const handleProcessFiles = async () => {
+          if (files.length === 0) return;
+          const filePaths = files.map(f => f.path);
+
+          try {
+               const response = await window.electronAPI.processModule1Files(filePaths);
+               console.log("Response from Master Backend:", response);
+               if (response.success) {
+                    // Temporarily just close it so the user can see it worked
+                    onClose();
+               }
+          } catch (error) {
+               console.error("IPC Bridge failed:", error);
+          }
      };
 
      return (

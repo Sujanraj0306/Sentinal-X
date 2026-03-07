@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
      exportExecutionLog: (logs) => ipcRenderer.invoke('export-execution-log', logs),
      triggerManualTool: (data) => ipcRenderer.invoke('manualToolTrigger', data),
      saveDocument: (filePath, defaultName) => ipcRenderer.invoke('save-document', filePath, defaultName),
+     processModule1Files: (filePaths) => ipcRenderer.invoke('process-module-1-files', filePaths),
 
      // App initialization signals (for setup modal)
      checkApiKeyStatus: () => ipcRenderer.invoke('check-api-key-status'),

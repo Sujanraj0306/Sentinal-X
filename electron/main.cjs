@@ -797,6 +797,23 @@ ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
      }
 });
 
+// Module 1: File Capture Bridge
+ipcMain.handle('process-module-1-files', async (event, filePaths) => {
+     try {
+          writeLog(`[MODULE 1 BRIDGE ACTIVE] Received ${filePaths?.length || 0} files from Frontend.`);
+          console.log("\n--- MODULE 1 BRIDGE ACTIVE ---");
+          console.log("Received files for ingestion:", filePaths);
+          console.log("------------------------------\n");
+
+          // For now, return a success bridging manifest back to React
+          return { success: true, count: filePaths.length, paths: filePaths };
+     } catch (err) {
+          writeLog(`[MODULE 1 ERROR] ${err.message}`);
+          return { success: false, error: err.message };
+     }
+});
+// (Removed stray lines)
+
 // IPC: Save Document safely to user machine
 ipcMain.handle('save-document', async (event, sourceFilePath, defaultName) => {
      try {
