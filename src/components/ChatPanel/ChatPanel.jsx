@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from '../MarkdownRenderer';
 import useWhisper from '../../hooks/useWhisper';
-import { Wrench, FileText, Download, Loader2 } from 'lucide-react';
+import { Wrench, FileText, Download, Loader2, Scale } from 'lucide-react';
 
 export default function ChatPanel({ activeCase, onStrategyRequested }) {
      const [messages, setMessages] = useState([]);
@@ -136,7 +136,8 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                setMessages(prev => prev.filter(m => m.id !== loadingMsgId)); // Remove loading
 
                if (response.status === 'success') {
-                    const sysMsg = { case_id: activeCase.id, role: 'system', content: `Petition Generated Successfully.`, markdown: response.markdown, file_path: response.file_path, timestamp: new Date().toISOString() };
+                    const docName = toolName === 'bail_application' ? 'Bail Application' : 'Petition';
+                    const sysMsg = { case_id: activeCase.id, role: 'system', content: `${docName} Generated Successfully.`, markdown: response.markdown, file_path: response.file_path, timestamp: new Date().toISOString() };
                     setMessages(prev => [...prev, sysMsg]);
                     await window.electronAPI.saveMessage(sysMsg);
                } else {
@@ -389,6 +390,14 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                                              >
                                                   <FileText className="w-4 h-4" />
                                                   Generate Petition
+                                             </button>
+                                             <button
+                                                  type="button"
+                                                  onClick={() => handleManualTool('bail_application')}
+                                                  className="flex items-center gap-3 px-4 py-4 text-left text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors border-b border-gray-100"
+                                             >
+                                                  <Scale className="w-4 h-4" />
+                                                  Bail Application Generator
                                              </button>
                                         </div>
                                    )}
