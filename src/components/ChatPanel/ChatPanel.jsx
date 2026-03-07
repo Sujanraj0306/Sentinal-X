@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MarkdownRenderer from '../MarkdownRenderer';
 import useWhisper from '../../hooks/useWhisper';
+import { Wrench, FileText, Download, Loader2 } from 'lucide-react';
 
 export default function ChatPanel({ activeCase, onStrategyRequested }) {
      const [messages, setMessages] = useState([]);
@@ -68,6 +69,8 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
      }, [messages]);
 
+     const [isToolsOpen, setIsToolsOpen] = useState(false);
+
      const handleSend = async (e) => {
           e.preventDefault();
           if (!input.trim() || !activeCase) return;
@@ -86,7 +89,7 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                const response = await window.electronAPI.requestStrategicAnalysis({ query, caseId: activeCase.id, folderPath: activeCase.folder_path });
 
                if (response.status === 'master-only' || response.status === 'debate-completed') {
-                    const aiMsg = { case_id: activeCase.id, role: 'master', content: response.verdict, timestamp: new Date().toISOString() };
+                    const aiMsg = { case_id: activeCase.id, role: 'master', content: response.verdict, file_path: response.file_path, timestamp: new Date().toISOString() };
                     setMessages(prev => [...prev, aiMsg]);
                     await window.electronAPI.saveMessage(aiMsg);
 
@@ -100,6 +103,63 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                     setMessages(prev => [...prev, errMsg]);
                     await window.electronAPI.saveMessage(errMsg);
                }
+          }
+     };
+
+     const handleManualTool = async (toolName) => {
+          if (!activeCase || !window.electronAPI) return;
+          setIsToolsOpen(false);
+
+          const loadingMsgId = `loading_${Date.now()}`;
+          const loadingMsg = { id: loadingMsgId, role: 'system', isGenerating: true, step: 0, timestamp: new Date().toISOString() };
+          setMessages(prev => [...prev, loadingMsg]);
+
+          const steps = ["1. Analyzing Case Facts...", "2. Drafting Legal Arguments...", "3. Formatting PDF..."];
+          let stepInterval = null;
+          let currentStep = 0;
+
+          stepInterval = setInterval(() => {
+               currentStep++;
+               if (currentStep < steps.length) {
+                    setMessages(prev => prev.map(m => m.id === loadingMsgId ? { ...m, step: currentStep } : m));
+               }
+          }, 3500);
+
+          try {
+               // gather full RAG context roughly (for the petition)
+               const chatHistoryText = messages.map(m => `[${m.role.toUpperCase()}]: ${m.content}`).join("\n");
+               const context = `Victim: ${activeCase.victim}\nAccused: ${activeCase.accused}\nSections: ${activeCase.sections}\nSummary: ${activeCase.summary}\nChat History:\n${chatHistoryText}`;
+
+               const response = await window.electronAPI.triggerManualTool({ tool: toolName, context });
+
+               clearInterval(stepInterval);
+               setMessages(prev => prev.filter(m => m.id !== loadingMsgId)); // Remove loading
+
+               if (response.status === 'success') {
+                    const sysMsg = { case_id: activeCase.id, role: 'system', content: `Petition Generated Successfully.`, markdown: response.markdown, file_path: response.file_path, timestamp: new Date().toISOString() };
+                    setMessages(prev => [...prev, sysMsg]);
+                    await window.electronAPI.saveMessage(sysMsg);
+               } else {
+                    const errMsg = { case_id: activeCase.id, role: 'system', content: `[ERROR]: ${response.error}`, timestamp: new Date().toISOString() };
+                    setMessages(prev => [...prev, errMsg]);
+                    await window.electronAPI.saveMessage(errMsg);
+               }
+          } catch (err) {
+               clearInterval(stepInterval);
+               setMessages(prev => prev.filter(m => m.id !== loadingMsgId));
+               console.error(err);
+          }
+     };
+
+     const handleDownload = async (filePath) => {
+          if (!window.electronAPI || !filePath) return;
+          try {
+               const result = await window.electronAPI.saveDocument(filePath, `Petition_${activeCase.id}.pdf`);
+               if (result.status === 'error') {
+                    console.error("Failed to save:", result.error);
+               }
+          } catch (err) {
+               console.error(err);
           }
      };
 
@@ -230,27 +290,62 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                                              : 'bg-black text-white border-black font-serif'
                                         }`}>
                                         {msg.role !== 'system' && (
-                                              <div className={`text-xs font-bold uppercase tracking-widest mb-2 flex justify-between items-center ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-300'}`}>
-                                                   <span>{msg.role === 'user' ? 'Lead Counsel' : 'Master LLM'}</span>
-                                                   <button 
-                                                        type="button"
-                                                        onClick={() => handleSpeak(msg.id || idx, msg.content)}
-                                                        className={`hover:text-black transition-colors ${playingMsgId === (msg.id || idx) ? 'text-black inline-flex items-center gap-1' : ''}`}
-                                                        title="Read Aloud"
-                                                   >
-                                                        {playingMsgId === (msg.id || idx) ? (
-                                                             <>
-                                                                  <span className="w-1.5 h-1.5 bg-black rounded-full animate-ping pr-1"></span>
-                                                                  Stop
-                                                             </>
-                                                        ) : (
-                                                             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2.586l3.707 3.707a1 1 0 001.707-.707V5.707a1 1 0 00-1.707-.707L9.586 10H7a2 2 0 00-2 2z"></path></svg>
-                                                        )}
-                                                   </button>
-                                              </div>
-                                         )}
+                                             <div className={`text-xs font-bold uppercase tracking-widest mb-2 flex justify-between items-center ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-300'}`}>
+                                                  <span>{msg.role === 'user' ? 'Lead Counsel' : 'Master LLM'}</span>
+                                                  <button
+                                                       type="button"
+                                                       onClick={() => handleSpeak(msg.id || idx, msg.content)}
+                                                       className={`hover:text-black transition-colors ${playingMsgId === (msg.id || idx) ? 'text-black inline-flex items-center gap-1' : ''}`}
+                                                       title="Read Aloud"
+                                                  >
+                                                       {playingMsgId === (msg.id || idx) ? (
+                                                            <>
+                                                                 <span className="w-1.5 h-1.5 bg-black rounded-full animate-ping pr-1"></span>
+                                                                 Stop
+                                                            </>
+                                                       ) : (
+                                                            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2.586l3.707 3.707a1 1 0 001.707-.707V5.707a1 1 0 00-1.707-.707L9.586 10H7a2 2 0 00-2 2z"></path></svg>
+                                                       )}
+                                                  </button>
+                                             </div>
+                                        )}
                                         <div className="whitespace-pre-wrap leading-relaxed markdown-body">
-                                             <MarkdownRenderer>{msg.content}</MarkdownRenderer>
+                                             {msg.isGenerating ? (
+                                                  <div className="flex flex-col gap-3 p-4 bg-gray-50 border-2 border-black border-dashed font-sans">
+                                                       <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-widest font-bold text-black">
+                                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                                            Processing Petition...
+                                                       </div>
+                                                       <div className="flex flex-col gap-1 text-xs font-mono pl-8 pt-2">
+                                                            {["1. Analyzing Case Facts...", "2. Drafting Legal Arguments...", "3. Formatting PDF..."].map((stepLabel, i) => (
+                                                                 <span key={i} className={`${msg.step >= i ? 'text-black font-bold' : 'text-gray-400 opacity-50'} transition-all flex items-center gap-2`}>
+                                                                      {msg.step === i && <span className="w-1.5 h-1.5 bg-black rounded-full animate-ping"></span>}
+                                                                      {msg.step > i && <span className="w-1.5 h-1.5 bg-black rounded-full"></span>}
+                                                                      {msg.step < i && <span className="w-1.5 h-1.5 border border-gray-400 rounded-full"></span>}
+                                                                      {stepLabel}
+                                                                 </span>
+                                                            ))}
+                                                       </div>
+                                                  </div>
+                                             ) : (
+                                                  <MarkdownRenderer>{msg.content}</MarkdownRenderer>
+                                             )}
+                                             {msg.markdown && (
+                                                  <div className="mt-4 border-2 border-black/10 bg-gray-50/50 text-black max-h-96 overflow-y-auto custom-scrollbar p-6 font-serif shadow-inner">
+                                                       <MarkdownRenderer>{msg.markdown}</MarkdownRenderer>
+                                                  </div>
+                                             )}
+                                             {msg.file_path && (
+                                                  <div className="mt-6 pt-4 border-t-2 border-black/20 text-center">
+                                                       <button
+                                                            onClick={() => handleDownload(msg.file_path)}
+                                                            className="inline-flex items-center gap-3 px-6 py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-[2px_2px_0px_0px_rgba(100,100,100,0.5)] active:shadow-none active:translate-y-0.5 active:translate-x-0.5"
+                                                       >
+                                                            <Download className="w-4 h-4" />
+                                                            Download Petition (PDF)
+                                                       </button>
+                                                  </div>
+                                             )}
                                         </div>
                                    </div>
                               </div>
@@ -260,49 +355,75 @@ export default function ChatPanel({ activeCase, onStrategyRequested }) {
                </div>
 
                {/* Input Area */}
-               <div className="p-4 bg-white border-t-2 border-black flex flex-col gap-2">
+               <div className="p-4 bg-white border-t-2 border-black flex flex-col gap-2 relative">
                     <form onSubmit={handleSend} className="relative flex items-center">
-                         <button
-                              type="button"
-                              onClick={handleUploadEvidence}
-                              disabled={isUploading || activeCase.isParsing}
-                              className="absolute left-3 p-2 bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 transition-colors z-10 text-xs font-bold uppercase tracking-widest disabled:opacity-50 flex items-center gap-2"
-                              title="Upload Evidence"
-                         >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                              <span className="hidden md:inline">{isUploading ? 'Ingesting...' : 'Evidence'}</span>
-                         </button>
+                         <div className="absolute left-3 z-20 flex flex-row gap-2">
+                              <button
+                                   type="button"
+                                   onClick={handleUploadEvidence}
+                                   disabled={isUploading || activeCase.isParsing}
+                                   className="p-2 bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 transition-colors text-xs font-bold uppercase tracking-widest disabled:opacity-50 flex items-center gap-2"
+                                   title="Upload Evidence"
+                              >
+                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                   <span className="hidden md:inline">{isUploading ? 'Ingesting...' : 'Evidence'}</span>
+                              </button>
+
+                              <div className="relative flex items-stretch">
+                                   <button
+                                        type="button"
+                                        onClick={() => setIsToolsOpen(!isToolsOpen)}
+                                        disabled={activeCase.isParsing}
+                                        className="p-2 bg-gray-100 hover:bg-gray-200 transition-colors text-xs font-bold uppercase tracking-widest disabled:opacity-50 flex items-center gap-2 border-l-2 border-r-2 border-gray-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] active:shadow-none translate-x-[2px] active:translate-y-[2px]"
+                                        title="Tools"
+                                   >
+                                        <Wrench className="w-4 h-4" />
+                                        <span className="hidden xl:inline">Tools</span>
+                                   </button>
+                                   {isToolsOpen && (
+                                        <div className="absolute bottom-full left-0 mb-3 w-56 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] z-30 flex flex-col overflow-hidden animate-fade-in">
+                                             <button
+                                                  type="button"
+                                                  onClick={() => handleManualTool('petition')}
+                                                  className="flex items-center gap-3 px-4 py-4 text-left text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors border-b border-gray-100"
+                                             >
+                                                  <FileText className="w-4 h-4" />
+                                                  Generate Petition
+                                             </button>
+                                        </div>
+                                   )}
+                              </div>
+                         </div>
 
                          <button
                               type="button"
                               onClick={whisper.isRecording ? whisper.stopRecording : whisper.startRecording}
                               disabled={activeCase.isParsing || whisper.isLoading || whisper.isTranscribing}
-                              className={`absolute right-28 p-2 rounded-full transition-colors z-10 flex items-center justify-center ${
-                                   whisper.isRecording 
-                                        ? 'bg-red-100 text-red-600 hover:bg-red-200 animate-pulse' 
-                                        : whisper.isTranscribing
-                                             ? 'bg-gray-100 text-gray-400'
-                                             : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                              }`}
+                              className={`absolute right-28 p-2 rounded-full transition-colors z-10 flex items-center justify-center ${whisper.isRecording
+                                   ? 'bg-red-100 text-red-600 hover:bg-red-200 animate-pulse'
+                                   : whisper.isTranscribing
+                                        ? 'bg-gray-100 text-gray-400'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                   }`}
                               title="Dictate with local AI"
                          >
                               {whisper.isTranscribing ? (
                                    <div className="w-5 h-5 border-2 border-gray-400 border-t-black rounded-full animate-spin"></div>
                               ) : whisper.isRecording ? (
-                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" /><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" /></svg>
                               ) : (
                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
                               )}
                          </button>
 
                          <input
-                              className="w-full pl-32 md:pl-40 pr-40 py-5 bg-white border-2 border-black focus:outline-none focus:ring-4 focus:ring-black/20 font-mono text-sm transition-shadow shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] placeholder-gray-400 disabled:opacity-50 disabled:bg-gray-50"
+                              className="w-full pl-32 md:pl-56 pr-40 py-5 bg-white border-2 border-black focus:outline-none focus:ring-4 focus:ring-black/20 font-mono text-sm transition-shadow shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] placeholder-gray-400 disabled:opacity-50 disabled:bg-gray-50"
                               placeholder={
-                                   whisper.isLoading ? "Loading local Whisper AI..." 
-                                   : whisper.isRecording ? "Listening..." 
-                                   : whisper.isTranscribing ? "Transcribing local audio..."
-                                   : activeCase.isParsing ? "Awaiting Extraction Phase..." 
-                                   : "Interrogate Master LLM or Request Strategy..."
+                                   whisper.isLoading ? "Loading local Whisper AI..."
+                                        : whisper.isRecording ? "Listening..."
+                                             : whisper.isTranscribing ? "Transcribing local audio..."
+                                                  : activeCase.isParsing ? "Awaiting Extraction Phase..."
+                                                       : "Interrogate Master LLM or Request Strategy..."
                               }
                               value={input}
                               disabled={activeCase.isParsing || whisper.isLoading || whisper.isRecording || whisper.isTranscribing}

@@ -216,6 +216,65 @@ async def generate_opposing_strategy(role: str, context: str, critique_target: s
         except Exception as e:
             logging.error(f"AirLLM Generation Error for {role}", exc_info=True)
             return f"AirLLM Generation Error: {str(e)}"
+
+@mcp.tool()
+async def generate_petition(markdown_content: str, output_filename: str = "petition.pdf") -> str:
+    """
+    Converts a drafted markdown petition into a formatted PDF document.
+    Saves to the /exports directory and returns the file path.
+    """
+    try:
+        from fpdf import FPDF
+        import re
+        
+        exports_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "exports")
+        os.makedirs(exports_dir, exist_ok=True)
+        pdf_path = os.path.join(exports_dir, output_filename)
+        md_path = os.path.join(exports_dir, output_filename.replace(".pdf", ".md"))
+        
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(markdown_content)
             
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_margins(left=20, top=20, right=20)
+        pdf.set_font("Times", size=12)
+        
+        lines = markdown_content.split('\n')
+        for line in lines:
+            # Clean generic markdown bold/heading chars
+            clean_line = line.replace('**', '').replace('__', '').strip()
+            
+            if not clean_line:
+                # Insert vertical gap for empty line
+                pdf.ln(5)
+            else:
+                # Check for headings or explicit uppercase legal lines
+                is_bold = False
+                if (clean_line.isupper() and len(re.sub(r'[^A-Z]', '', clean_line)) > 3) or clean_line.startswith("#"):
+                    is_bold = True
+                    clean_line = clean_line.lstrip("#").strip()
+                
+                if is_bold:
+                    pdf.set_font("Times", style="B", size=12)
+                else:
+                    pdf.set_font("Times", style="", size=12)
+                
+                # Render line
+                pdf.multi_cell(0, 7, txt=clean_line)
+                # Small intra-paragraph or line spacing
+                pdf.ln(2)
+                
+        pdf.output(pdf_path)
+        
+        return json.dumps({
+            "status": "success",
+            "pdf_path": pdf_path,
+            "md_path": md_path
+        })
+    except Exception as e:
+        import traceback
+        return json.dumps({"status": "error", "error": str(e) + " " + traceback.format_exc()})
+
 if __name__ == "__main__":
     mcp.run()

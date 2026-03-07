@@ -546,16 +546,55 @@ ipcMain.handle('request-strategic-analysis', async (event, { query, caseId, fold
 
           event.sender.send('debate-node-status', { agent: 'Master Judge', status: 'Synthesizing...' });
           const finalDebateLog = [...geminiStrategies, ...localCritiques].join('\n\n');
-          const masterPrompt = `${safetyBypass} \n\nYou are the Master Judge LLM in a Legal War Room. Review the following 1v1 clashes between Team Gemini (Cloud) and Team Local (Ollama). Synthesize them and issue a final, robust "Master Verdict" recommendation. Use Google Search to verify any cited case laws or statutes.\n\nDebate Outputs: \n${finalDebateLog} \n\nFinal Verdict: `;
+          const masterPrompt = `${safetyBypass} \n\nYou are the Master Judge LLM in a Legal War Room. Review the following 1v1 clashes between Team Gemini (Cloud) and Team Local (Ollama). Synthesize them and issue a final, robust "Master Verdict" recommendation. Use Google Search to verify any cited case laws or statutes. If and only if the user query explicitly requested to draft or create a petition, YOU MUST USE the call_petition_draftsman tool to delegate the petition generation task.\n\nDebate Outputs: \n${finalDebateLog} \n\nFinal Verdict: `;
+
+          const judgeTools = [
+               { googleSearch: {} },
+               { functionDeclarations: [{ name: "call_petition_draftsman", description: "Call this tool if the user explicitly requests to draft or create a petition. Provide strategic instructions for the draftsman.", parameters: { type: "OBJECT", properties: { instructions: { type: "STRING" } }, required: ["instructions"] } }] }
+          ];
 
           let masterVerdict = "Failed";
+          let petitionFilePath = null;
           try {
                const masterRes = await ai.models.generateContent({
                     model: 'gemini-2.5-pro',
                     contents: masterPrompt,
-                    config: { tools: [{ googleSearch: {} }] }
+                    config: { tools: judgeTools }
                });
-               masterVerdict = masterRes.text;
+
+               if (masterRes.functionCalls && masterRes.functionCalls.length > 0) {
+                    const call = masterRes.functionCalls.find(fc => fc.name === "call_petition_draftsman");
+                    if (call) {
+                         emitStream('Master Judge', `[Tool Call] Delegating to PetitionDraftsman to create the document...\n`);
+                         event.sender.send('debate-node-status', { agent: 'Master Judge', status: 'Drafting Petition...' });
+
+                         const draftsmanPromptText = `${draftsmanPrompt}\n\nCase Context:\n${finalDebateLog}\n\nJudge Instructions:\n${call.args.instructions}`;
+                         const draftsmanRes = await ai.models.generateContent({
+                              model: 'gemini-2.5-pro',
+                              contents: draftsmanPromptText
+                         });
+
+                         emitStream('Master Judge', `[Tool Call] Petition drafted. Converting to PDF via MCP Server...\n`);
+
+                         const mcpRes = await mcpClient.callTool({
+                              name: "generate_petition",
+                              arguments: { markdown_content: draftsmanRes.text, output_filename: `petition_${caseId}.pdf` }
+                         });
+
+                         let toolResult = mcpRes.content[0].text;
+                         const parsedRes = JSON.parse(toolResult);
+                         if (parsedRes.status === 'success') {
+                              petitionFilePath = parsedRes.pdf_path;
+                              masterVerdict = `### Petition Generated Successfully\n\nThe Petition Draftsman has finalized the petition.\n\n[PDF Saved at: ${parsedRes.pdf_path}]\n\n*Review the document locally or click the Download button below.*`;
+                         } else {
+                              masterVerdict = `Failed to generate PDF: ${parsedRes.error}`;
+                         }
+                    } else {
+                         masterVerdict = masterRes.text;
+                    }
+               } else {
+                    masterVerdict = masterRes.text;
+               }
           } catch (e) { masterVerdict = "Master Judge Error: " + e.message; }
 
           event.sender.send('debate-node-result', { agent: 'Master Judge', content: masterVerdict, phase: 'Final' });
@@ -563,7 +602,7 @@ ipcMain.handle('request-strategic-analysis', async (event, { query, caseId, fold
           clearInterval(streamInterval);
           flushStream();
 
-          return { status: 'debate-completed', verdict: masterVerdict };
+          return { status: 'debate-completed', verdict: masterVerdict, file_path: petitionFilePath };
 
      } catch (error) {
           console.error('AI Routing Error:', error);
@@ -633,6 +672,85 @@ ipcMain.handle('export-execution-log', async (event, logs) => {
           return { status: 'success', path: filePath };
      } catch (err) {
           writeLog(`[ERROR] Failed to export log: ${err.message} `);
+          return { status: 'error', error: err.message };
+     }
+});
+
+const draftsmanPrompt = `You are an expert Indian Legal Draftsman. Your sole job is to draft formal petitions based on the provided case facts and strategy. You MUST strictly output your response using this exact markdown structure, filling in the bracketed information from the context:
+IN THE COURT OF [Court Name]
+Petition No: [Leave blank if unknown]
+Petitioner: [Name and Address of Complainant/Victim]
+Respondent: [Name and Address of Accused]
+PETITION
+The petitioner respectfully submits:
+That the petitioner is a resident of [Location].
+That the respondent has committed [Specific offenses/Sections].
+That the petitioner has suffered loss due to the actions of the respondent.
+That the petitioner approached the respondent but no action was taken.
+[Add 2-3 specific paragraphs here detailing the case facts and legal grounds based on the Master Judge's verdict].
+PRAYER
+The petitioner therefore prays that this Honorable Court may kindly:
+Grant appropriate relief.
+Pass necessary orders in favor of the petitioner.
+Place: [Location]
+Date: [Current Date]
+Signature \n Petitioner / Advocate`;
+
+ipcMain.handle('manualToolTrigger', async (event, { tool, context }) => {
+     if (tool !== 'petition') return { status: 'error', error: 'Unknown tool' };
+     const apiKey = getGeminiApiKey();
+     if (!apiKey) return { status: 'error', error: 'No API Key configured.' };
+
+     try {
+          const GoogleGenAI = await getGoogleGenAIClass();
+          const ai = new GoogleGenAI({ apiKey });
+
+          const prompt = `${draftsmanPrompt}\n\nCase Context and Strategy to convert into Petition:\n${context}`;
+
+          const res = await ai.models.generateContent({
+               model: 'gemini-2.5-pro',
+               contents: prompt
+          });
+
+          const markdown_content = res.text;
+
+          // Call MCP tool
+          const mcpRes = await mcpClient.callTool({
+               name: "generate_petition",
+               arguments: { markdown_content, output_filename: `petition_${Date.now()}.pdf` }
+          });
+
+          let toolResult = mcpRes.content[0].text;
+          const parsedRes = JSON.parse(toolResult);
+
+          if (parsedRes.status === 'success') {
+               return { status: 'success', file_path: parsedRes.pdf_path, markdown: markdown_content };
+          } else {
+               return { status: 'error', error: parsedRes.error, markdown: markdown_content };
+          }
+     } catch (err) {
+          return { status: 'error', error: err.message };
+     }
+});
+
+// IPC: Save Document safely to user machine
+ipcMain.handle('save-document', async (event, sourceFilePath, defaultName) => {
+     try {
+          const { filePath, canceled } = await dialog.showSaveDialog(mainWindow, {
+               title: 'Save Document',
+               defaultPath: defaultName || 'Document.pdf',
+               filters: [{ name: 'PDF Document', extensions: ['pdf'] }, { name: 'All Files', extensions: ['*'] }]
+          });
+
+          if (canceled || !filePath) return { status: 'cancelled' };
+
+          // Use fs.copyFileSync to move from backend /exports to user's desired location
+          fs.copyFileSync(sourceFilePath, filePath);
+          writeLog(`[IPC LOG] Saved file from ${sourceFilePath} to ${filePath}`);
+
+          return { status: 'success', path: filePath };
+     } catch (err) {
+          writeLog(`[ERROR] Failed to save document: ${err.message}`);
           return { status: 'error', error: err.message };
      }
 });

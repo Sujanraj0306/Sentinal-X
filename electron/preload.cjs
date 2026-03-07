@@ -28,6 +28,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
      uploadEvidence: (caseId, folderPath) => ipcRenderer.invoke('upload-evidence', caseId, folderPath),
      deleteCase: (caseId) => ipcRenderer.invoke('delete-case', caseId),
      exportExecutionLog: (logs) => ipcRenderer.invoke('export-execution-log', logs),
+     triggerManualTool: (data) => ipcRenderer.invoke('manualToolTrigger', data),
+     saveDocument: (filePath, defaultName) => ipcRenderer.invoke('save-document', filePath, defaultName),
 
      // App initialization signals (for setup modal)
      checkApiKeyStatus: () => ipcRenderer.invoke('check-api-key-status'),
