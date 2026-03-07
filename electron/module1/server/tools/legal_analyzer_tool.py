@@ -50,8 +50,10 @@ class LegalAnalyzer:
         
         if self.has_api:
             try:
-                self.model = genai.GenerativeModel('gemini-2.0-flash')
-                logger.info("Gemini model initialized for legal analysis (gemini-2.0-flash)")
+                import certifi
+                os.environ["SSL_CERT_FILE"] = certifi.where()
+                self.model = genai.GenerativeModel('gemini-1.5-flash')
+                logger.info("Gemini model initialized for legal analysis (gemini-1.5-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_api = False

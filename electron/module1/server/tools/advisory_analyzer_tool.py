@@ -36,9 +36,11 @@ class AdvisoryAnalyzer:
             logger.warning("GEMINI_API_KEY not found in environment")
             self.model = None
         else:
+            import certifi
+            os.environ["SSL_CERT_FILE"] = certifi.where()
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-2.0-flash')
-            logger.info("Gemini API configured successfully")
+            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            logger.info("Gemini API configured successfully (gemini-1.5-flash)")
     
     def analyze_advisory(
         self,
