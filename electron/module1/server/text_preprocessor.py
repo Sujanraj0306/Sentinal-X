@@ -71,8 +71,8 @@ class TextPreprocessor:
         
         if self.has_translation:
             try:
-                self.model = genai.GenerativeModel('gemini-3.1-flash')
-                logger.info("Gemini model initialized for translation (gemini-3.1-flash)")
+                self.model = genai.GenerativeModel('gemini-2.0-flash')
+                logger.info("Gemini model initialized for translation (gemini-2.0-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_translation = False

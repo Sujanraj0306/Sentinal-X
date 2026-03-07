@@ -50,8 +50,8 @@ class LegalAnalyzer:
         
         if self.has_api:
             try:
-                self.model = genai.GenerativeModel('gemini-3.1-flash')
-                logger.info("Gemini model initialized for legal analysis (gemini-3.1-flash)")
+                self.model = genai.GenerativeModel('gemini-2.0-flash')
+                logger.info("Gemini model initialized for legal analysis (gemini-2.0-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_api = False
@@ -180,7 +180,7 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
             prompt = self.generate_analysis_prompt(facts, sections, domain, evidence)
             
             # Get analysis from Gemini with real timeout
-            logger.info("Requesting analysis from Gemini API (gemini-3.1-flash, 60s timeout)...")
+            logger.info("Requesting analysis from Gemini API (gemini-2.0-flash, 30s timeout)...")
             
             import signal
             from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
@@ -190,9 +190,9 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
                 return resp.text.strip()
             
             try:
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    future = executor.submit(_call_gemini, prompt)
-                    analysis_text = future.result(timeout=60)
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(_call_gemini, prompt)
+                analysis_text = future.result(timeout=30)
                 logger.info(f"Analysis generated ({len(analysis_text)} chars)")
                 
             except (TimeoutError, FuturesTimeoutError, Exception) as e:
@@ -207,6 +207,10 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
                     "has_evidence": evidence is not None,
                     "error": str(e)
                 }
+            finally:
+                # IMPORTANT: wait=False prevents main thread from deadlocking if worker hangs
+                if 'executor' in locals():
+                    executor.shutdown(wait=False)
             
             # Structure the result
             result = {

@@ -37,7 +37,7 @@ class AdvisoryAnalyzer:
             self.model = None
         else:
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-3.1-flash')
+            self.model = genai.GenerativeModel('gemini-2.0-flash')
             logger.info("Gemini API configured successfully")
     
     def analyze_advisory(
@@ -86,15 +86,15 @@ class AdvisoryAnalyzer:
             
             # Generate analysis with timeout
             try:
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    future = executor.submit(_call_gemini, prompt)
-                    analysis_text = future.result(timeout=60)
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(_call_gemini, prompt)
+                analysis_text = future.result(timeout=60)
                 
                 result = {
                     "analysis": analysis_text,
                     "domain": domain,
                     "generated_at": datetime.now().isoformat(),
-                    "model_used": "gemini-3.1-flash",
+                    "model_used": "gemini-2.0-flash",
                     "context_docs_count": len(retrieved_docs)
                 }
                 
@@ -111,6 +111,9 @@ class AdvisoryAnalyzer:
                     "context_docs_count": len(retrieved_docs),
                     "error": str(e)
                 }
+            finally:
+                if 'executor' in locals():
+                    executor.shutdown(wait=False)
             
         except Exception as e:
             logger.error(f"Error generating advisory analysis: {str(e)}")
