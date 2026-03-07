@@ -45,8 +45,8 @@ class LegalAnalyzer:
         
         if self.has_api:
             try:
-                self.model = genai.GenerativeModel('gemini-flash-latest')
-                logger.info("Gemini model initialized for legal analysis")
+                self.model = genai.GenerativeModel('gemini-2.0-flash')
+                logger.info("Gemini model initialized for legal analysis (gemini-2.0-flash)")
             except Exception as e:
                 logger.error(f"Error initializing Gemini model: {str(e)}")
                 self.has_api = False
@@ -174,25 +174,24 @@ Please provide a comprehensive legal analysis in clear, structured paragraphs. U
             # Generate prompt
             prompt = self.generate_analysis_prompt(facts, sections, domain, evidence)
             
-            # Get analysis from Gemini with timeout
-            logger.info("Requesting analysis from Gemini API...")
+            # Get analysis from Gemini with real timeout
+            logger.info("Requesting analysis from Gemini API (gemini-2.0-flash, 60s timeout)...")
             
-            # Configure request with timeout (30 seconds)
-            import asyncio
-            from concurrent.futures import TimeoutError as FuturesTimeoutError
+            import signal
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+            
+            def _call_gemini(p):
+                resp = self.model.generate_content(p)
+                return resp.text.strip()
             
             try:
-                # Set a reasonable timeout to prevent hanging
-                response = self.model.generate_content(
-                    prompt,
-                    request_options={"timeout": 30}
-                )
-                analysis_text = response.text.strip()
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(_call_gemini, prompt)
+                    analysis_text = future.result(timeout=60)
                 logger.info(f"Analysis generated ({len(analysis_text)} chars)")
                 
             except (TimeoutError, FuturesTimeoutError, Exception) as api_error:
                 logger.error(f"Gemini API error: {str(api_error)}")
-                # Fall back to template-based analysis
                 logger.info("Falling back to template-based analysis")
                 analysis_text = self.generate_template_analysis(facts, sections, domain)
                 
