@@ -1,6 +1,6 @@
 import React from 'react';
 
-function AdvisoryResultsView({ results, onReset }) {
+function AdvisoryResultsView({ results, onReset, onComplete }) {
      const { caseId, domain, analysis, report, summary } = results;
 
      const handleOpenPDF = async () => {
@@ -99,6 +99,15 @@ function AdvisoryResultsView({ results, onReset }) {
                </div>
 
                <div className="results-actions">
+                    {onComplete && report?.case_directory && (
+                         <button
+                              onClick={() => onComplete(results.caseTitle || caseId, report.case_directory)}
+                              className="action-button primary"
+                              style={{ background: '#0056b3', borderColor: '#0056b3', minWidth: '100%', marginBottom: '1rem' }}
+                         >
+                              PROCEED TO WAR ROOM &#10140;
+                         </button>
+                    )}
                     <button onClick={handleOpenPDF} className="action-button primary">
                          OPEN ADVISORY REPORT (PDF)
                     </button>

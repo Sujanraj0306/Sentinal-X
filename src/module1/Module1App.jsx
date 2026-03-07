@@ -91,8 +91,9 @@ function App({ onClose, onComplete }) {
 
                const reportResponse = await api.generateReport(caseId, caseData);
 
-               // Set results
+               // Set results including caseTitle so child views know it
                setResults({
+                    caseTitle: caseTitle || caseId,
                     caseId,
                     classification,
                     sections,
@@ -101,12 +102,8 @@ function App({ onClose, onComplete }) {
                     report: reportResponse.data
                });
 
-               // Automate Data Handoff to War Room (Module 3)
-               if (onComplete && reportResponse.data.case_directory) {
-                    onComplete(caseTitle || caseId, reportResponse.data.case_directory);
-               } else {
-                    setCurrentStep('results');
-               }
+               // Stop auto-redirect. Let the user review the results first.
+               setCurrentStep('results');
 
           } catch (err) {
                console.error('Analysis error:', err);
@@ -137,6 +134,7 @@ function App({ onClose, onComplete }) {
                const report = result.steps?.report || {};
 
                setResults({
+                    caseTitle: caseTitle || result.case_id,
                     caseId: result.case_id,
                     domain: classification.domain,
                     analysis: analysis,
@@ -144,6 +142,7 @@ function App({ onClose, onComplete }) {
                     summary: result.summary
                });
 
+               // Stop auto-redirect. Let the user review the results first.
                setCurrentStep('results');
 
           } catch (err) {
@@ -211,11 +210,11 @@ function App({ onClose, onComplete }) {
                     )}
 
                     {currentStep === 'results' && caseType === 'litigation' && (
-                         <ResultsView results={results} onReset={handleReset} />
+                         <ResultsView results={results} onReset={handleReset} onComplete={onComplete} />
                     )}
 
                     {currentStep === 'results' && caseType === 'advisory' && (
-                         <AdvisoryResultsView results={results} onReset={handleReset} />
+                         <AdvisoryResultsView results={results} onReset={handleReset} onComplete={onComplete} />
                     )}
                </main>
           </div>

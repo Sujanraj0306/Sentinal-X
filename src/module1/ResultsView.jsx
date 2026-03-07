@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ResultsView({ results, onReset }) {
+function ResultsView({ results, onReset, onComplete }) {
      const { caseId, classification, sections, evidence, analysis, report } = results;
 
      const handleOpenPDF = async () => {
@@ -224,10 +224,19 @@ function ResultsView({ results, onReset }) {
                     </div>
                </div>
 
-               <div className="results-footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
+               <div className="results-footer" style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                     <button onClick={onReset} className="btn-secondary">
                          NEW CASE ANALYSIS
                     </button>
+                    {onComplete && results.report?.case_directory && (
+                         <button
+                              onClick={() => onComplete(results.caseTitle || results.caseId, results.report.case_directory)}
+                              className="btn-primary"
+                              style={{ background: '#0056b3', borderColor: '#0056b3' }}
+                         >
+                              PROCEED TO WAR ROOM &#10140;
+                         </button>
+                    )}
                </div>
           </div>
      );
