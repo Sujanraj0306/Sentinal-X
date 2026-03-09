@@ -27,3 +27,4 @@ mcp_server/venv/
 exports/
 __pycache__/
 *.pdf
+.env
