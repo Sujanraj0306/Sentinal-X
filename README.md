@@ -1,3 +1,4 @@
+# Sentinal-X
 # Legal War Room: Autonomous Strategic Defense System
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -42,4 +43,4 @@
    ```bash
    npm start
    ```
-# Sentinal-X
+
