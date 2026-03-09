@@ -16,19 +16,6 @@ class CaseMapperTool:
     def map_case_to_statutes(self, case_text: str) -> list[dict[str, Any]]:
         logger.info(f"Mapping case text (length: {len(case_text)}) using InLegalBERT embeddings...")
         
-        # Mock highly structured output
-        return [
-            {
-                "statute": "Section 420 IPC",
-                "confidence": 0.92,
-                "reasoning": "High semantic overlap with fraudulent intent vectors."
-            },
-            {
-                "statute": "Section 406 IPC",
-                "confidence": 0.85,
-                "reasoning": "Semantic match with breach of trust indicators."
-            }
-        ]
 
 if __name__ == "__main__":
     # Manual execution test
